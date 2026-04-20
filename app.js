@@ -160,7 +160,8 @@ function init(){
   });
 
   $("btnAutoNo").addEventListener("click", ()=>{
-    editorState.docNo = nextNumber(editorState.type);
+    const clientName = $("cName").value || editorState.cName || "";
+    editorState.docNo = nextNumber(editorState.type, clientName);
     $("docNo").value = editorState.docNo;
     renderPreview();
     scheduleDraftSave();
@@ -398,11 +399,24 @@ function emptyDoc(type){
   };
 }
 
-function nextNumber(type){
+function clientAcronym(name){
+  if(!name || !name.trim()) return "";
+  return name.trim()
+    .split(/\s+/)
+    .map(w => w[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 4);
+}
+
+function nextNumber(type, clientName){
   const yyyy = new Date().getFullYear();
   const prefix = type==="quote" ? "DEV" : "FAC";
-  const n = store.counters[type] || 1;
-  const no = `${prefix}-${yyyy}-${String(n).padStart(4,"0")}`;
+  const acro   = clientAcronym(clientName);
+  const n      = store.counters[type] || 1;
+  const no     = acro
+    ? `${acro}-${prefix}-${yyyy}-${String(n).padStart(4,"0")}`
+    : `${prefix}-${yyyy}-${String(n).padStart(4,"0")}`;
   store.counters[type] = n + 1;
   saveStore();
   return no;
