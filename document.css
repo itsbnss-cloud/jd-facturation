@@ -1,0 +1,116 @@
+/* ================================
+   JD Facturation – Document A4 (PDF)
+   ================================ */
+.doc {
+  font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+  padding: 30px 34px;
+  line-height: 1.3;
+  background: #fff;
+  color: #111;
+}
+
+.docHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  border-bottom: 2px solid #f5a623;
+  padding-bottom: 16px;
+}
+
+.docBrand { display: flex; align-items: center; gap: 12px; }
+.docBrand img { width: 52px; height: 52px; object-fit: contain; }
+.docBrand__name { font-weight: 900; font-size: 15px; letter-spacing: .2px; }
+.docBrand__meta { font-size: 10.5px; color: #555; margin-top: 4px; white-space: pre-line; line-height: 1.45; }
+
+.docType { text-align: right; }
+.docType__title {
+  font-weight: 900;
+  font-size: 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #0a0a0a;
+}
+.docType__no   { font-size: 12px; color: #555; margin-top: 6px; font-weight: 700; }
+.docType__date { font-size: 11px; color: #777; margin-top: 3px; }
+
+.docBlock {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+.docBox {
+  border: 1px solid #ebebeb;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.docBox__title { font-weight: 900; font-size: 11px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; color: #888; }
+.docBox__text  { font-size: 11px; color: #222; white-space: pre-line; line-height: 1.5; }
+
+.docTable { margin-top: 18px; border: 1px solid #ebebeb; border-radius: 10px; overflow: hidden; }
+.docTableHead, .docTableRow {
+  display: grid;
+  grid-template-columns: 1fr 90px 110px 110px;
+  gap: 10px;
+  padding: 10px 14px;
+  align-items: center;
+}
+.docTableHead {
+  background: #0a0a0a;
+  color: #f5a623;
+  font-weight: 900;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.docTableRow { border-top: 1px solid #ebebeb; font-size: 11px; }
+.docTableRow .right { text-align: right; }
+.desc { white-space: pre-line; }
+
+.docTotals { display: flex; justify-content: flex-end; margin-top: 16px; }
+.totalsBox {
+  width: 290px;
+  border: 1px solid #ebebeb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.totalsLine {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  padding: 8px 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.totalsLine:last-child {
+  border-bottom: none;
+  background: #0a0a0a;
+  color: #f5a623;
+  font-weight: 900;
+  font-size: 13px;
+}
+.totalsLine strong { font-weight: 800; }
+
+.docNotes {
+  margin-top: 16px;
+  font-size: 11px;
+  color: #444;
+  white-space: pre-line;
+  border-left: 3px solid #f5a623;
+  padding-left: 10px;
+  line-height: 1.5;
+}
+
+.docFooter {
+  margin-top: 18px;
+  border-top: 1px solid #ebebeb;
+  padding-top: 10px;
+  font-size: 10px;
+  color: #777;
+  white-space: pre-line;
+  line-height: 1.5;
+}
+
+@media print {
+  body { background: #fff !important; }
+}

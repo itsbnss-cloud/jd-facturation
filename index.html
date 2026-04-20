@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>JD – Devis & Factures</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="./logojd.svg" />
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./document.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand__logo" src="./logojd.svg" alt="Logo" onerror="this.style.display='none'" />
+        <div class="brand__txt">
+          <div class="brand__title">JD Facturation</div>
+          <div class="brand__sub">Local • Simple • Rapide</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Navigation">
+        <button class="nav__item" data-route="dashboard"><span class="nav__dot"></span> Tableau de bord
+        </button>
+        <button class="nav__item" data-route="quote"><span class="nav__dot"></span> Nouveau devis
+        </button>
+        <button class="nav__item" data-route="invoice"><span class="nav__dot"></span> Nouvelle facture
+        </button>
+        <button class="nav__item" data-route="history"><span class="nav__dot"></span> Historique
+        </button>
+        <button class="nav__item" data-route="clients">
+          <span class="nav__dot"></span><span class="nav__ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>Clients</span>
+        </button>
+
+        <button class="nav__item" data-route="settings"><span class="nav__dot"></span> Paramètres
+        </button>
+      </nav>
+
+      <div class="sidebar__footer">
+        <div class="hint">
+          <div class="hint__title">Astuce</div>
+          <div class="hint__text">Le bouton <b>Envoyer</b> télécharge le PDF puis ouvre Gmail avec un message pré-rempli. Il te reste juste à glisser le PDF.</div>
+        </div>
+      </div>
+    </aside>
+    <div class="overlay" id="overlay" hidden></div>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="iconBtn" id="btnMenu" aria-label="Menu" title="Menu"><img src="./icons/menu-burger.svg" alt="" /></button>
+          <div class="pageTitle" id="pageTitle">Tableau de bord</div>
+          <div class="pageMeta" id="pageMeta">Devis & factures – stockage local</div>
+        </div>
+        <div class="topbar__right">
+          <div class="autoSaveStatus" id="autoSaveStatus">
+            <span class="autoSaveStatus__dot"></span>
+            <span class="autoSaveStatus__text">Sauvegardé</span>
+          </div>
+          <button class="btn btn--ghost" id="btnExport">Exporter</button>
+          <label class="btn btn--ghost" for="importFile" style="cursor:pointer">Importer</label>
+          <input id="importFile" type="file" accept="application/json" hidden />
+        </div>
+      </header>
+
+      <section class="content">
+
+        <!-- DASHBOARD -->
+        <div class="view" id="view-dashboard">
+          <div class="dashLayout">
+            <div class="dashMain">
+              <div class="card card--pad">
+                <div class="row row--space">
+                  <div>
+                    <div class="card__title">Derniers documents</div>
+                    <div class="muted">Clique pour recharger.</div>
+                  </div>
+                  <div class="row">
+                    <button class="btn btn--ghost" data-go="quote">Nouveau devis</button>
+                    <button class="btn" data-go="invoice">Nouvelle facture</button>
+                  </div>
+                </div>
+                <div class="list" id="recentList"></div>
+                <div class="muted" id="recentEmpty">Aucun document pour le moment.</div>
+              </div>
+
+              <div class="grid two" style="margin-top:14px">
+                <div class="card card--pad">
+                  <div class="card__title">Raccourcis</div>
+                  <div class="stack">
+                    <button class="btn" data-go="quote">Créer un devis</button>
+                    <button class="btn" data-go="invoice">Créer une facture</button>
+                    <button class="btn btn--ghost" data-go="history">Voir l'historique</button>
+                  </div>
+                </div>
+
+                <div class="card card--pad">
+                  <div class="card__title">Résumé</div>
+                  <div class="muted">Vue simple sur tes documents.</div>
+                  <div class="summaryGrid" style="margin-top:12px">
+                    <div class="miniStat">
+                      <div class="miniStat__label">Documents</div>
+                      <div class="miniStat__value" id="kpiDocs">0</div>
+                      <div class="miniStat__sub" id="kpiDocsSub">—</div>
+                    </div>
+                    <div class="miniStat">
+                      <div class="miniStat__label">Devis</div>
+                      <div class="miniStat__value" id="kpiQuotes">0</div>
+                      <div class="miniStat__sub" id="kpiQuotesSub">—</div>
+                    </div>
+                    <div class="miniStat">
+                      <div class="miniStat__label">Factures</div>
+                      <div class="miniStat__value" id="kpiInvoices">0</div>
+                      <div class="miniStat__sub" id="kpiInvoicesSub">—</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashSide">
+              <div class="darkCard">
+                <div class="darkCard__top">
+                  <div>
+                    <div class="darkCard__label">Total facturé</div>
+                    <div class="darkCard__value" id="kpiInvoiced">0 €</div>
+                    <div class="darkCard__sub" id="kpiInvoicedSub">Somme des factures enregistrées</div>
+                  </div>
+                  <div class="darkCard__badge">€</div>
+                </div>
+
+                <div class="darkCard__hint">
+                  Astuce : finalise tes documents pour verrouiller le numéro et éviter les erreurs.
+                </div>
+              </div>
+
+              <div class="card card--pad" style="margin-top:14px">
+                <div class="card__title">Actions rapides</div>
+                <div class="stack">
+                  <button class="btn btn--ghost" data-go="settings">Mes mentions</button>
+                  <button class="btn btn--ghost" id="btnExport2">Exporter</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EDITOR (quote/invoice) -->
+        <div class="view" id="view-editor">
+          <div class="editor">
+            <div class="editor__left">
+              <div class="card card--pad">
+                <div class="card__title" id="editorTitle">Nouveau document</div>
+
+                <div class="formGrid">
+                  <div class="field">
+                    <label>Type</label>
+                    <select id="docType">
+                      <option value="quote">Devis</option>
+                      <option value="invoice">Facture</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label>Numéro</label>
+                    <div class="row">
+                      <input id="docNo" placeholder="DEV-2026-0001" />
+                      <button class="btn btn--ghost" id="btnAutoNo" title="Générer automatiquement">Auto</button>
+                    </div>
+                    <div class="help">Tu peux laisser vide puis cliquer <b>Auto</b>.</div>
+                  </div>
+
+                  <div class="field">
+                    <label>Date</label>
+                    <input id="docDate" type="date" />
+                  </div>
+
+                  <div class="field">
+                    <label>Échéance / validité (option)</label>
+                    <input id="docDue" placeholder="ex: 30 jours" />
+                  </div>
+
+                  <!-- Client quick-pick row -->
+                  <div class="field field--full clientPick-row">
+                    <label>Choisir un client enregistré</label>
+                    <div class="row">
+                      <select id="clientPick" style="flex:1"></select>
+                      <button class="btn btn--ghost" id="btnNewClientShortcut" title="Ajouter un nouveau client">+ Nouveau client</button>
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label>Client – nom</label>
+                    <input id="cName" placeholder="Nom du client" />
+                  </div>
+
+                  <div class="field">
+                    <label>Client – email</label>
+                    <input id="cEmail" type="email" placeholder="client@email.com" />
+                  </div>
+
+                  <div class="field field--full">
+                    <label>Client – adresse (option)</label>
+                    <textarea id="cAddress" rows="3" placeholder="Adresse du client"></textarea>
+                  </div>
+                </div>
+
+                <div class="hr"></div>
+
+                <div class="row row--space">
+                  <div class="card__title" style="margin:0">Lignes</div>
+                  <button class="btn btn--ghost" id="btnAddLine">+ Ajouter</button>
+                </div>
+
+                <div class="lines" id="lines"></div>
+
+                <div class="hr"></div>
+
+                <div class="formGrid">
+                  <div class="field field--full">
+                    <label>TVA</label>
+                    <div class="row">
+                      <label style="display:flex;align-items:center;gap:10px">
+                        <input id="vatToggle" type="checkbox" />
+                        TVA applicable
+                      </label>
+                      <div class="muted">Sinon : franchise en base (mention art. 293 B)</div>
+                    </div>
+                    <div class="help">Par défaut, c'est ton réglage dans Paramètres. Tu peux changer par document.</div>
+                  </div>
+                  <div class="field">
+                    <label>Taux TVA (%)</label>
+                    <input id="taxRate" type="number" min="0" step="1" value="0" />
+                  </div>
+
+                  <div class="field">
+                    <label>Remise (€)</label>
+                    <div class="stepper">
+                      <button class="btnMini" type="button" id="discMinus">-5</button>
+                      <input id="discount" type="number" step="5" value="0" />
+                      <button class="btnMini" type="button" id="discPlus">+5</button>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Acompte (€)</label>
+                    <div class="stepper">
+                      <button class="btnMini" type="button" id="depMinus">-5</button>
+                      <input id="deposit" type="number" step="5" value="0" />
+                      <button class="btnMini" type="button" id="depPlus">+5</button>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Notes (option)</label>
+                    <input id="notes" placeholder="Merci, conditions, etc." />
+                  </div>
+                </div>
+
+                <div class="actionsBar">
+                  <button class="btn btn--ghost" id="btnReset">Réinitialiser</button>
+                  <div class="actionsBar__right">
+                    <button class="btn btn--ghost" id="btnSave">Enregistrer</button>
+                    <button class="btn" id="btnPdf">Télécharger PDF</button>
+                    <button class="btn btn--ghost js-quoteOnly" id="btnConvert" title="Créer une facture à partir de ce devis">Devis → Facture</button>
+                    <button class="btn btn--accent" id="btnSend">Envoyer</button>
+                  </div>
+                </div>
+
+                <div class="muted" id="sendHint">"Envoyer" télécharge d'abord le PDF puis ouvre Gmail avec objet + message pré-remplis.</div>
+
+                <!-- Keyboard shortcut legend -->
+                <div class="shortcuts-hint">
+                  <span>Ctrl+S Enregistrer</span>
+                  <span class="shortcuts-hint__sep">•</span>
+                  <span>Ctrl+P Télécharger PDF</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="editor__right">
+              <div class="card card--pad">
+                <div class="row row--space">
+                  <div class="card__title">Aperçu</div>
+                  <div class="pill" id="totalsPill">Total: 0 €</div>
+                </div>
+
+                <div class="docWrap">
+                  <div id="docPaper" class="docPaper" aria-label="Aperçu du document">
+                    <!-- rendu dynamique -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="view" id="view-history">
+          <div class="card card--pad">
+            <div class="row row--space">
+              <div>
+                <div class="card__title">Historique</div>
+                <div class="muted">Clique un document pour le recharger, télécharger ou envoyer.</div>
+              </div>
+              <div class="row">
+                <select id="historyFilter">
+                  <option value="all">Tout</option>
+                  <option value="quote">Devis</option>
+                  <option value="invoice">Factures</option>
+                </select>
+                <input id="historySearch" placeholder="Rechercher (numéro, client...)" />
+                <button class="btn btn--ghost" id="btnClearHistory">Vider</button>
+              </div>
+            </div>
+
+            <div class="table" id="historyTable"></div>
+            <div class="muted" id="historyEmpty">Aucun document enregistré.</div>
+          </div>
+        </div>
+
+
+        <!-- CLIENTS -->
+        <div class="view" id="view-clients">
+          <div class="card card--pad">
+            <div class="row row--space">
+              <div>
+                <div class="card__title">Clients</div>
+                <div class="muted">Enregistre tes clients pour remplir plus vite devis et factures.</div>
+              </div>
+              <button class="btn" id="btnAddClient">
+                <img class="btn__ico" src="./icons/plus.svg" alt=""/>
+                Ajouter
+              </button>
+            </div>
+
+            <div class="row" style="margin-top:12px">
+              <div class="search">
+                <img src="./icons/search.svg" alt="" />
+                <input id="clientSearch" placeholder="Rechercher un client…" />
+              </div>
+            </div>
+
+            <div class="tableWrap" style="margin-top:12px">
+              <table class="table" id="clientTable">
+                <thead>
+                  <tr>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Type</th>
+                    <th style="text-align:right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="muted" id="clientEmpty" style="margin-top:10px" hidden>Aucun client.</div>
+          </div>
+
+          <div class="modal" id="clientModal" hidden>
+            <div class="modal__card">
+              <div class="row row--space">
+                <div class="card__title" id="clientModalTitle">Nouveau client</div>
+                <button class="iconBtn" id="clientModalClose" title="Fermer">✕</button>
+              </div>
+              <div class="formGrid" style="margin-top:12px">
+                <div class="field field--full">
+                  <label>Nom / Raison sociale</label>
+                  <input id="clName" />
+                </div>
+                <div class="field">
+                  <label>Email</label>
+                  <input id="clEmail" type="email" />
+                </div>
+                <div class="field">
+                  <label>Type</label>
+                  <select id="clType">
+                    <option value="particulier">Particulier</option>
+                    <option value="pro">Professionnel</option>
+                  </select>
+                </div>
+                <div class="field field--full">
+                  <label>Adresse</label>
+                  <textarea id="clAddress" rows="4"></textarea>
+                </div>
+                <div class="field field--full">
+                  <label>TVA intracom (si pro)</label>
+                  <input id="clVat" placeholder="FR.." />
+                </div>
+              </div>
+              <div class="actionsBar" style="margin-top:14px">
+                <button class="btn btn--ghost" id="btnDeleteClient" hidden>Supprimer</button>
+                <button class="btn" id="btnSaveClient">Enregistrer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+<!-- SETTINGS -->
+        <div class="view" id="view-settings">
+          <div class="grid two">
+            <div class="card card--pad">
+              <div class="card__title">Identité</div>
+              <div class="formGrid">
+              <div class="field field--full">
+                <label>Nom commercial / marque (affiché)</label>
+                <input id="sBrand" placeholder="Jeune Designer Studio" />
+              </div>
+
+              <div class="field field--full">
+                <label>Nom / prénom (nom légal)</label>
+                <input id="sLegalName" placeholder="Prénom NOM" />
+              </div>
+
+              <div class="field field--full">
+                <label>Statut / forme</label>
+                <input id="sStatus" placeholder="Entrepreneur individuel – Micro-entreprise (Micro-BNC)" />
+              </div>
+
+              <div class="field">
+                <label>SIRET</label>
+                <input id="sSiret" placeholder="123 456 789 00012" />
+              </div>
+              <div class="field">
+                <label>Code APE</label>
+                <input id="sApe" placeholder="7410Z" />
+              </div>
+
+              <div class="field field--full">
+                <label>Adresse</label>
+                <textarea id="sAddress" rows="4" placeholder="Ton adresse"></textarea>
+              </div>
+
+              <div class="field">
+                <label>Email</label>
+                <input id="sEmail" type="email" placeholder="ton@email.com" />
+              </div>
+              <div class="field">
+                <label>Téléphone (option)</label>
+                <input id="sPhone" placeholder="+33 ..." />
+              </div>
+
+              <div class="field field--full">
+                <label>TVA</label>
+                <select id="sVatMode">
+                  <option value="exempt">Franchise en base (TVA non applicable)</option>
+                  <option value="standard">TVA applicable</option>
+                </select>
+                <div class="help">Si franchise en base, la facture affichera la mention obligatoire "TVA non applicable, art. 293 B du CGI".</div>
+              </div>
+
+              <div class="field">
+                <label>Taux TVA (%) (si applicable)</label>
+                <input id="sVatRate" type="number" step="1" min="0" value="20" />
+              </div>
+              <div class="field">
+                <label>Mention TVA (si franchise)</label>
+                <input id="sVatMention" placeholder="TVA non applicable, art. 293 B du CGI" />
+              </div>
+
+              <div class="field field--full">
+                <label>Conditions de paiement (option)</label>
+                <input id="sPayTerms" placeholder="Virement bancaire / espèces…" />
+              </div>
+
+              <div class="field">
+                <label>Pénalités de retard (option)</label>
+                <input id="sLateFee" placeholder="Taux d'intérêt légal (ex: 10% / an) ou mention" />
+              </div>
+
+              <div class="field">
+                <label>Indemnité recouvrement (B2B)</label>
+                <input id="sRecoveryFee" placeholder="40 € (si client pro)" />
+              </div>
+
+              <div class="field field--full">
+                <label>Mentions / footer libre (option)</label>
+                <textarea id="sFooter" rows="3" placeholder="Autres mentions, conditions..."></textarea>
+              </div>
+</div>
+              <div class="actionsBar">
+                <button class="btn btn--accent" id="btnSaveSettings">Sauvegarder</button>
+              </div>
+            </div>
+
+            <div class="card card--pad">
+              <div class="card__title">Modèle d'email</div>
+              <div class="muted">Tu peux personnaliser le texte envoyé dans Gmail. Variables: {type}, {no}, {date}, {client}, {total}, {brand}.</div>
+              <div class="field field--full" style="margin-top:12px">
+                <label>Objet</label>
+                <input id="tSubject" />
+              </div>
+              <div class="field field--full">
+                <label>Message</label>
+                <textarea id="tBody" rows="10"></textarea>
+              </div>
+              <div class="actionsBar">
+                <button class="btn btn--ghost" id="btnResetTemplate">Réinitialiser</button>
+                <button class="btn btn--accent" id="btnSaveTemplate">Sauvegarder</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="./html2pdf.bundle.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
