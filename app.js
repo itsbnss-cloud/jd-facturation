@@ -66,6 +66,16 @@ function init(){
     btn.addEventListener("click", ()=> route(btn.dataset.route));
   });
 
+  // Mobile preview toggle
+  const btnTogglePreview = $("btnTogglePreview");
+  if(btnTogglePreview){
+    btnTogglePreview.addEventListener("click", ()=>{
+      const right = document.querySelector(".editor__right");
+      right.classList.toggle("mob-visible");
+      btnTogglePreview.textContent = right.classList.contains("mob-visible") ? "▲ Masquer l'aperçu" : "Voir l'aperçu ▼";
+    });
+  }
+
   // Mobile menu
   const btnMenu = $("btnMenu");
   const overlay = $("overlay");

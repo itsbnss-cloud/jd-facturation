@@ -379,7 +379,7 @@ select option { background: #1a1a1a; color: var(--text); }
 .table { margin-top: 12px; }
 .thead, .trow {
   display: grid;
-  grid-template-columns: 140px 120px 1fr 160px 170px;
+  grid-template-columns: 100px 75px 1fr 110px 130px 100px;
   gap: 10px;
   align-items: center;
   padding: 10px 12px;
@@ -585,4 +585,111 @@ select option { background: #1a1a1a; color: var(--text); }
   font-weight: 600;
   min-width: 100px;
   text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE MOBILE ERGONOMIQUE
+═══════════════════════════════════════════════════════ */
+
+/* Bouton aperçu → masqué sur desktop */
+.mob-preview-btn { display: none !important; }
+
+@media (max-width: 640px) {
+
+  /* ── Contenu ── */
+  .content { padding: 10px; }
+
+  /* ── Topbar : allégé ── */
+  .topbar { padding: 10px 12px; gap: 6px; flex-wrap: wrap; }
+  .pageMeta { display: none; }
+  .autoSaveStatus__text { display: none; }
+  #btnExport { display: none; }
+  label[for="importFile"] { display: none; }
+
+  /* ── Formulaire → 1 colonne ── */
+  .formGrid { grid-template-columns: 1fr; }
+  .field--full { grid-column: 1; }
+
+  /* ── Ligne facture : description pleine largeur, puis Qté / Prix / Total ── */
+  .lineGrid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .lineGrid .field:first-child {
+    grid-column: 1 / -1;
+  }
+  .lineGrid .stepper { gap: 3px; }
+  .lineGrid .btnMini  { padding: 6px 7px; font-size: 11px; }
+  .lineGrid .help     { display: none; }
+
+  /* ── Barre d'actions → wrap, non sticky ── */
+  .actionsBar {
+    position: static;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+  }
+  .actionsBar__right {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+  .actionsBar .btn,
+  .actionsBar .btn--ghost { font-size: 11px; padding: 8px 10px; }
+
+  /* ── Bouton toggle aperçu ── */
+  .mob-preview-btn {
+    display: flex !important;
+    width: 100%;
+    justify-content: center;
+    margin: 10px 0 4px;
+  }
+
+  /* ── Aperçu : masqué par défaut ── */
+  .editor__right { display: none; }
+  .editor__right.mob-visible { display: block; }
+
+  /* ── Doc preview scrollable ── */
+  .docWrap {
+    overflow-x: auto;
+    max-height: 55vh;
+    padding: 8px;
+  }
+
+  /* ── Historique → vue carte ── */
+  .thead { display: none; }
+  .trow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    padding: 12px;
+    align-items: center;
+  }
+  .trow > div:nth-child(1) { order: 4; width: 50%; color: var(--muted); font-size: 11px; }   /* date */
+  .trow > div:nth-child(2) { order: 1; width: auto; }                                          /* badge */
+  .trow > div:nth-child(3) { order: 2; flex: 1; font-weight: 700; font-size: 13px; }          /* client */
+  .trow > div:nth-child(4) { order: 3; width: 100%; font-weight: 800; color: var(--y); font-size: 14px; } /* total */
+  .trow > div:nth-child(5) { order: 4; width: 50%; text-align: right; font-size: 11px; color: var(--muted); } /* numéro */
+  .trow > div:nth-child(6) { order: 5; width: 100%; display: flex; gap: 6px; justify-content: flex-end; margin-top: 4px; } /* actions */
+
+  /* ── Historique barre recherche ── */
+  #historyFilter  { min-width: 80px; }
+  #historySearch  { flex: 1; min-width: 0; }
+  #historyTable .row { flex-wrap: wrap; }
+  .view#view-history .row--space { flex-wrap: wrap; gap: 8px; }
+  .view#view-history .row--space > .row { width: 100%; flex-wrap: wrap; gap: 6px; }
+
+  /* ── Misc ── */
+  .grid.two       { grid-template-columns: 1fr; }
+  .row--space     { flex-wrap: wrap; gap: 8px; }
+  .shortcuts-hint { display: none; }
+
+  /* ── Clients : row bouton wrap ── */
+  .clientPick-row .row { flex-wrap: wrap; }
+  #btnNewClientShortcut { width: 100%; justify-content: center; }
+
+  /* ── Dashboard ── */
+  .dashLayout    { grid-template-columns: 1fr; }
+  .summaryGrid   { grid-template-columns: repeat(3, 1fr); }
+  .darkCard__value { font-size: 28px; }
 }
